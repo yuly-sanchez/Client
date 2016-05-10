@@ -4,6 +4,10 @@ import introsde.finalproject.client.util.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.ws.rs.client.Client;
@@ -37,6 +41,7 @@ public class ClientApp {
 			int operation = -1;
 			int idPerson = -1;
 			boolean targetID = false;
+			
 			double inputValueDouble = -1;
 			int inputValueInt = -1;
 			
@@ -113,30 +118,34 @@ public class ClientApp {
 			while(operation != 0){
 				
 				System.out.println("\nMENU'\n");
-	    		System.out.println("1 - Print person information");
-	    		System.out.println("2 - Set currentHealth profile (and verify if the goal is hit)- sleep");
-	    		System.out.println("3 - Set currentHealth profile (and verify if the goal is hit) - weight");
-	    		System.out.println("4 - Set currentHealth profile (and verify if the goal is hit)- water");
-	    		System.out.println("5 - Set currentHealth profile (and verify if the goal is hit)- steps");
-	    		System.out.println("6 - Set goal - hours slept the previous night");
-	    		System.out.println("7 - Set goal - new weight");
-	    		System.out.println("8 - Set goal - litres of water you should drink");
-	    		System.out.println("9 - Print currentGoals information");
-	    		System.out.println("0 - Exit");
+	    		System.out.println("1  - Print person information");
+	    		System.out.println("2  - Set health profile (and verify if the goal is hit)- sleep");
+	    		System.out.println("3  - Set health profile (and verify if the goal is hit) - weight");
+	    		System.out.println("4  - Set health profile (and verify if the goal is hit)- water");
+	    		System.out.println("5  - Set health profile (and verify if the goal is hit)- steps");
+	    		System.out.println("6  - Set goal - hours slept (at least 8 hours recommended per day)");
+	    		System.out.println("7  - Set goal - new weight");
+	    		System.out.println("8  - Set goal - litres of water (at least 3 litres recommended per day)");
+	    		System.out.println("9  - Set goal - number of steps (at least 30000 recommended per day)");
+	    		System.out.println("10 - Create measure - water");
+	    		System.out.println("11 - Create goal - water");
+	    		System.out.println("0  - Exit");
 	    		
 	    		System.out.print("\nHow do you want to proceed?\n");
 	    		operation = Integer.parseInt(input.nextLine());
 	    		
-	    		if(operation < 0 || operation > 8){
+	    		if(operation < 0 || operation > 11){
 	    			System.out.print("\nOperation not allowed, try again!\n\n");
 	    		}
 	    		
 	    		switch (operation) {
 				case 0:
+					
 					System.out.println("\nThank you for using this application!");
 					break;
 
 				case 1:
+					
 					//BLS -> GET readPersonDetails(int idPerson)
 					path = "/person/" + idPerson;
 	    	    	
@@ -167,7 +176,7 @@ public class ClientApp {
 	    	    		System.out.println("Gender: " + obj.getString("gender"));
 	    	    		
 	    	    		System.out.println("===============================================");
-	    	    		System.out.println("PERSON's CURRENT HEALTH PROFILE");
+	    	    		System.out.println("PERSON's HEALTH PROFILE");
 	    	    		System.out.println("===============================================");
 	    	    		
 	    	    		for(int i = 0; i < obj.getJSONObject("currentHealth").getJSONArray("measure").length(); i++){
@@ -186,7 +195,6 @@ public class ClientApp {
 	    	    			System.out.println("Achieved: " + obj.getJSONObject("goals").getJSONArray("goal").getJSONObject(i).get("achieved"));
 	        	    		System.out.println("");
 	    	            }
-	    	    		
 	    	    	}
 					break;
 				
@@ -198,18 +206,18 @@ public class ClientApp {
 					
 	    			while(inputValueDouble < 0 || inputValueDouble > 24){
 	    				System.out.println("===============================================");
-	    				System.out.println("HEALTH PROFILE - sleeping hours");
+	    				System.out.println("SET HEALTH PROFILE - sleeping hours");
 	    	    		System.out.println("===============================================\n");
 	    				
 	    				System.out.println("Insert a new value: ");
-	    				inputValueDouble = Integer.parseInt(input.nextLine());
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
 	    				if(inputValueDouble < 0 || inputValueDouble > 24){
 	    					System.out.println("Value not allowed! Please, try again!");
 	    				}
 	    			}
 	    				
-					//PCS -> PUT checkCurrentHealth(int idPerson, String measureName)
-			    	path = "/person/" + idPerson + "/checkCurrentHealth/" + measureName;
+					//PCS -> PUT checkMeasure(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkMeasure/" + measureName;
 			    	ClientConfig clientConfig = new ClientConfig();
 					Client client = ClientBuilder.newClient(clientConfig);
 					
@@ -261,18 +269,18 @@ public class ClientApp {
 					
 	    			while(inputValueDouble < 0){
 	    				System.out.println("===============================================");
-	    				System.out.println("HEALTH PROFILE - weight");
+	    				System.out.println("SET HEALTH PROFILE - weight");
 	    	    		System.out.println("===============================================\n");
 	    				
 	    	    		System.out.println("Insert a new value: ");
-	    				inputValueDouble = Integer.parseInt(input.nextLine());
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
 	    				if(inputValueDouble < 0){
 	    					System.out.println("Value not allowed! Please, try again!");
 	    				}
 	    			}
 	    				
-	    			//PCS -> PUT checkCurrentHealth(int idPerson, String measureName)
-			    	path = "/person/" + idPerson + "/checkCurrentHealth/" + measureName;
+	    			//PCS -> PUT checkMeasure(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkMeasure/" + measureName;
 			    	
 			    	ClientConfig clientConfig3 = new ClientConfig();
 					Client client3 = ClientBuilder.newClient(clientConfig3);
@@ -325,18 +333,18 @@ public class ClientApp {
 					
 	    			while(inputValueDouble < 0){
 	    				System.out.println("===============================================");
-	    				System.out.println("HEALTH PROFILE - water");
+	    				System.out.println("SET HEALTH PROFILE - water");
 	    	    		System.out.println("===============================================\n");
 	    				
 	    	    		System.out.println("Insert a new value: ");
-	    				inputValueDouble = Integer.parseInt(input.nextLine());
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
 	    				if(inputValueDouble < 0){
 	    					System.out.println("Value not allowed! Please, try again!");
 	    				}
 	    			}
 	    				
-	    			//PCS -> PUT checkCurrentHealth(int idPerson, String measureName)
-			    	path = "/person/" + idPerson + "/checkCurrentHealth/" + measureName;
+	    			//PCS -> PUT checkMeasure(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkMeasure/" + measureName;
 			    	
 			    	ClientConfig clientConfig4 = new ClientConfig();
 					Client client4 = ClientBuilder.newClient(clientConfig4);
@@ -383,56 +391,45 @@ public class ClientApp {
 					
 				case 5:
 					
-					/**
-					 * while(value3 < 0 || value3 > 1000000){
-			  				System.out.println("Goal - steps: ");
-			  				System.out.println("Insert new value: ");
-			  				value3 = Integer.parseInt(input.nextLine());
-			  				if(value3 < 0 || value3 > 1000000){
-			  					System.out.println("Value not allowed! Please, try again!");
-			  				}
-			  			}
-					 */
-					
 					//measureName --> steps
 					measureName = "steps";
 					inputValueInt = -1;
 					
-	    			while(inputValueDouble < 0){
+	    			while(inputValueInt < 0){
 	    				System.out.println("===============================================");
-	    				System.out.println("HEALTH PROFILE - water");
+	    				System.out.println("SET HEALTH PROFILE - steps");
 	    	    		System.out.println("===============================================\n");
 	    				
 	    	    		System.out.println("Insert a new value: ");
-	    				inputValueDouble = Integer.parseInt(input.nextLine());
-	    				if(inputValueDouble < 0){
+	    				inputValueInt = Integer.parseInt(input.nextLine());
+	    				if(inputValueInt < 0){
 	    					System.out.println("Value not allowed! Please, try again!");
 	    				}
 	    			}
 	    				
-	    			//PCS -> PUT checkCurrentHealth(int idPerson, String measureName)
-			    	path = "/person/" + idPerson + "/checkCurrentHealth/" + measureName;
+	    			//PCS -> PUT checkMeasure(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkMeasure/" + measureName;
 			    	
-			    	ClientConfig clientConfig4 = new ClientConfig();
-					Client client4 = ClientBuilder.newClient(clientConfig4);
+			    	ClientConfig clientConfig5 = new ClientConfig();
+					Client client5 = ClientBuilder.newClient(clientConfig5);
 					
-					WebTarget service4 = client4.target(processCentricURL + path);
+					WebTarget service5 = client5.target(processCentricURL + path);
 
-			    	Response res4 = null;
-					String putResp4 = null;
+			    	Response res5 = null;
+					String putResp5 = null;
 					
-			    	String inputMeasureJSON4 ="{"
-			        						+ "\"value\":" + inputValueDouble
+			    	String inputMeasureJSON5 ="{"
+			        						+ "\"value\":" + inputValueInt
 			        						+"}";
 			    	
-			    	res4 = service4.request(mediaType).put(Entity.json(inputMeasureJSON4));
-			    	putResp4 = res4.readEntity(String.class);
+			    	res5 = service5.request(mediaType).put(Entity.json(inputMeasureJSON5));
+			    	putResp5 = res5.readEntity(String.class);
 		    		
-			    	if(res4.getStatus() != 200 ){
+			    	if(res5.getStatus() != 200 ){
 			    		System.out.println("ERROR during updating! Please, try again!");
 			    		
 			    	}else{
-			    		obj = new JSONObject(putResp4.toString());
+			    		obj = new JSONObject(putResp5.toString());
 			    		
 			    		System.out.println("water - updated measure => " + obj.getJSONObject("comparisonInformation").get("measureValue"));
 	    	    		System.out.println("water - goal set => " + obj.getJSONObject("comparisonInformation").get("goalValue"));
@@ -454,45 +451,316 @@ public class ClientApp {
 	    	    			System.out.println("Motivational phrase: " + motivation);
 	    	    		}
 			    	}
-
 					break;
 					
 				case 6:
+					
+					//measureName --> sleep
+					measureName = "sleep";
+					inputValueDouble = -1;
+					
+	    			while(inputValueDouble < 0 || inputValueDouble > 24){
+	    				System.out.println("===============================================");
+	    				System.out.println("SET GOAL - sleeping hours");
+	    				System.out.println("===============================================\n");
+	    				System.out.println("Insert a new value: ");
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
+	    				if(inputValueDouble < 0 || inputValueDouble > 24){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> PUT checkGoal(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkGoal/" + measureName;
+					ClientConfig clientConfig6 = new ClientConfig();
+					Client client6 = ClientBuilder.newClient(clientConfig6);
+					
+					WebTarget service6 = client6.target(processCentricURL + path);
+
+			    	Response res6 = null;
+					String putResp6 = null;
+					
+			    	String inputGoalJSON6 ="{"
+			        				+ "\"value\": " + inputValueDouble
+			        				+"}";
+			    	
+			    	res6 = service6.request(mediaType).put(Entity.json(inputGoalJSON6));
+			    	putResp6 = res6.readEntity(String.class);
+			    	
+			    	if(res6.getStatus() != 200 ){
+			    		System.out.println("ERROR during updating! Please, try again!");
+			    		
+			    	}else{
+			    		System.out.println("Goal updated successfully!");
+			    	}
 					break;
 					
 				case 7:
+					
+					//measureName --> weight
+					measureName = "weight";
+					inputValueDouble = -1;
+					
+	    			while(inputValueDouble < 0){
+	    				System.out.println("===============================================");
+	    				System.out.println("SET GOAL - weight");
+	    				System.out.println("===============================================\n");
+	    				System.out.println("Insert a new value: ");
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
+	    				if(inputValueDouble < 0 || inputValueDouble > 1001){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> PUT checkGoal(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkGoal/" + measureName;
+					ClientConfig clientConfig7 = new ClientConfig();
+					Client client7 = ClientBuilder.newClient(clientConfig7);
+					
+					WebTarget service7 = client7.target(processCentricURL + path);
+
+			    	Response res7 = null;
+					String putResp7 = null;
+					
+			    	String inputGoalJSON7 ="{"
+			        				+ "\"value\": " + inputValueDouble
+			        				+"}";
+			    	
+			    	res7 = service7.request(mediaType).put(Entity.json(inputGoalJSON7));
+			    	putResp7 = res7.readEntity(String.class);
+			    	
+			    	if(res7.getStatus() != 200 ){
+			    		System.out.println("ERROR during updating! Please, try again!");
+			    		
+			    	}else{
+			    		System.out.println("Goal updated successfully!");
+			    	}
 					break;	
 				
 				case 8:
+					
+					//measureName --> water
+					measureName = "water";
+					inputValueDouble = -1;
+					
+	    			while(inputValueDouble < 0){
+	    				System.out.println("===============================================");
+	    				System.out.println("SET GOAL - water");
+	    				System.out.println("===============================================\n");
+	    				System.out.println("Insert a new value: ");
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
+	    				if(inputValueDouble < 0 || inputValueDouble > 100){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> PUT checkGoal(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkGoal/" + measureName;
+					ClientConfig clientConfig8 = new ClientConfig();
+					Client client8 = ClientBuilder.newClient(clientConfig8);
+					
+					WebTarget service8 = client8.target(processCentricURL + path);
+
+			    	Response res8 = null;
+					String putResp8 = null;
+					
+			    	String inputGoalJSON8 ="{"
+			        				+ "\"value\": " + inputValueDouble
+			        				+"}";
+			    	
+			    	res8 = service8.request(mediaType).put(Entity.json(inputGoalJSON8));
+			    	putResp8 = res8.readEntity(String.class);
+			    	
+			    	if(res8.getStatus() != 200 ){
+			    		System.out.println("ERROR during updating! Please, try again!");
+			    		
+			    	}else{
+			    		System.out.println("Goal updated successfully!");
+			    	}
 					break;
+				
+				case 9:
+					
+					//measureName --> steps
+					measureName = "steps";
+					inputValueInt = -1;
+					
+	    			while(inputValueInt < 0 || inputValueInt > 100000){
+	    				System.out.println("===============================================");
+	    				System.out.println("SET GOAL - steps");
+	    				System.out.println("===============================================\n");
+	    				System.out.println("Insert a new value: ");
+	    				inputValueInt = Integer.parseInt(input.nextLine());
+	    				if(inputValueInt < 0 || inputValueInt > 100000){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> PUT checkGoal(int idPerson, String measureName)
+			    	path = "/person/" + idPerson + "/checkGoal/" + measureName;
+					ClientConfig clientConfig9 = new ClientConfig();
+					Client client9 = ClientBuilder.newClient(clientConfig9);
+					
+					WebTarget service9 = client9.target(processCentricURL + path);
+
+			    	Response res9 = null;
+					String putResp9 = null;
+					
+			    	String inputGoalJSON9 ="{"
+			        				+ "\"value\": " + inputValueInt
+			        				+"}";
+			    	
+			    	res9 = service9.request(mediaType).put(Entity.json(inputGoalJSON9));
+			    	putResp9 = res9.readEntity(String.class);
+			    	
+			    	if(res9.getStatus() != 200 ){
+			    		System.out.println("ERROR during updating! Please, try again!");
+			    		
+			    	}else{
+			    		System.out.println("Goal updated successfully!");
+			    	}
+					break;
+				
+				case 10:
+
+					//measureName --> water
+					measureName = "water";
+					inputValueDouble = -1;
+					
+	    			while(inputValueDouble < 0){
+	    				System.out.println("===============================================");
+	    				System.out.println("CREATE MEASURE - water");
+	    				System.out.println("===============================================\n");
+	    				System.out.println("Insert a new value: ");
+	    				inputValueDouble = Double.parseDouble(input.nextLine()); //Integer.parseInt(input.nextLine());
+	    				if(inputValueDouble < 0 || inputValueDouble > 50){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> POST insertNewMeasure(int idPerson, String inputMeasureJSON, String measureName)
+			    	path = "/person/" + idPerson + "/insertNewMeasure/" + measureName;
+					ClientConfig clientConfig10 = new ClientConfig();
+					Client client10 = ClientBuilder.newClient(clientConfig10);
+					
+					WebTarget service10 = client10.target(processCentricURL);
+
+			    	Response res10 = null;
+					String postResp10 = null;
+					
+			    	String inputMeasureJSON10 ="{"
+			    					+ "\"name\": " + measureName + ","
+			        				+ "\"value\": " + inputValueDouble
+			        				+"}";
+			    	System.out.println(inputMeasureJSON10);
+			    	
+			    	res10 = service10.path(path).request().accept(mediaType)
+							.post(Entity.entity(inputMeasureJSON10, mediaType),
+									Response.class);
+			    	postResp10 = res10.readEntity(String.class);
+			    	
+			    	System.out.println(postResp10.toString());
+			    	
+			    	if(res10.getStatus() != 200 ){
+			    		System.out.println("ERROR during creating! Please, try again!");
+			    		
+			    	}else{
+			    		obj = new JSONObject(postResp10.toString());
+			    		
+			    		System.out.println("Measure: " + obj.getJSONObject("measure").get("type"));
+			    		System.out.println("ID: " + obj.getJSONObject("measure").get("id"));
+    	    			System.out.println("Value: " + obj.getJSONObject("measure").get("value"));  		
+			    	}
+					break;
+					
+				case 11:
+					
+					//measureName --> water
+					measureName = "water";
+					inputValueDouble = -1;
+					
+					Date startDateGoal = null;
+					Date endDateGoal = null;
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); 
+					    
+					boolean achieved = false;
+					
+	    			while(inputValueDouble < 0){
+	    				System.out.println("===============================================");
+	    				System.out.println("CREATE GOAL - water");
+	    				System.out.println("===============================================\n");
+	    				
+	    				System.out.println("Insert a new value: ");
+	    				inputValueDouble = Double.parseDouble(input.nextLine());
+	    				
+	    				try{
+	    					System.out.println("Insert a new startDateGoal: ");
+		    				startDateGoal = df.parse(input.nextLine());
+					        //String newDateString = df.format(startDate); 
+		    				
+		    				System.out.println("Insert a new endDateGoal: ");
+		    				endDateGoal = df.parse(input.nextLine());
+		    				
+	    				}catch(ParseException e){
+	    					e.printStackTrace();
+	    				}
+	    				
+	    				if(inputValueDouble < 0 || inputValueDouble > 50){
+	    					System.out.println("Value not allowed! Please, try again!");
+	    				}
+	    				if(startDateGoal == null){
+	    					System.out.println("StartDateGoal not allowed! Please, try again!");
+	    				}
+	    				if(endDateGoal == null){
+	    					System.out.println("EndDateGoal not allowed! Please, try again!");
+	    				}
+	    			}
+	    				
+	    			//PCS -> POST insertNewGoal(int idPerson, String inputGoalJSON, String measureName)
+			    	path = "/person/" + idPerson + "/insertNewGoal/" + measureName;
+					ClientConfig clientConfig11 = new ClientConfig();
+					Client client11 = ClientBuilder.newClient(clientConfig11);
+					
+					WebTarget service11 = client11.target(processCentricURL);
+
+			    	Response res11 = null;
+					String postResp11 = null;
+					
+			    	String inputGoalJSON11 ="{"
+			    					+ "\"type\": " + measureName + ","
+			        				+ "\"value\": " + inputValueDouble + ","
+			        				+ "\"startDateGoal\": " + df.format(startDateGoal) + ","
+			        				+ "\"endDateGoal\": " + df.format(endDateGoal) + ","
+			        				+ "\"achieved\": " + achieved
+			        				+"}";
+			    	
+			    	System.out.println(inputGoalJSON11);
+			    	
+			    	res11 = service11.path(path).request().accept(mediaType)
+							.post(Entity.entity(inputGoalJSON11, mediaType),
+									Response.class);
+			    	postResp11 = res11.readEntity(String.class);
+			    	
+			    	System.out.println(postResp11.toString());
+			    	
+			    	if(res11.getStatus() != 200 ){
+			    		System.out.println("ERROR during creating! Please, try again!");
+			    		
+			    	}else{
+			    		obj = new JSONObject(postResp11.toString());
+			    		
+			    		System.out.println("Goal: " + obj.getJSONObject("goal").get("measure"));
+			    		System.out.println("ID: " + obj.getJSONObject("goal").get("id"));
+    	    			System.out.println("Value: " + obj.getJSONObject("goal").get("value"));
+    	    			System.out.println("Achieved: " + obj.getJSONObject("goal").get("achieved"));
+			    	}
+					break;	
 				}
 			}
 			
 		}catch(Exception e){
-			System.out.println("{ \n \"error\" : \"Error in Business Logic Services, due to the exception: "
+			System.out.println("{ \n \"error\" : \"Error in Process Centric Services, due to the exception: "
 					+ e + "\"}");
 		}
-	}
-	
-	public static String center (String s, int length) {
-	    if (s.length() > length) {
-	        return s.substring(0, length);
-	    } else if (s.length() == length) {
-	        return s;
-	    } else {
-	        int leftPadding = (length - s.length()) / 2; 
-	        StringBuilder leftBuilder = new StringBuilder();
-	        for (int i = 0; i < leftPadding; i++) {
-	            leftBuilder.append(" ");
-	        }
-
-	        int rightPadding = length - s.length() - leftPadding;
-	        StringBuilder rightBuilder = new StringBuilder();
-	        for (int i = 0; i < rightPadding; i++) 
-	            rightBuilder.append(" ");
-
-	        return leftBuilder.toString() + s 
-	                + rightBuilder.toString();
-	    }
 	}
 }
